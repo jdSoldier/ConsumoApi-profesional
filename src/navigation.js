@@ -46,6 +46,9 @@
  * segundo click, se puede mejorar.                                   *
  *
  */
+let page = 1;
+let infiniteScroll;
+let maxPage;
 
 arrowBtn.addEventListener("click", () => {
   history.back();
@@ -62,9 +65,15 @@ trendingBtn.addEventListener("click", () => {
 
 window.addEventListener("hashchange", navigator, false);
 window.addEventListener("DOMContentLoaded", navigator, false);
+window.addEventListener("scroll", infiniteScroll, false);
 
 function navigator() {
   console.log({ location });
+
+  if (infiniteScroll) {
+    window.removeEventListener("scroll", infiniteScroll, { passive: false });
+    infiniteScroll = undefined;
+  }
 
   if (location.hash.startsWith("#trends")) {
     trendsPage();
@@ -81,6 +90,10 @@ function navigator() {
   //document.scrollTop = 0;
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
+
+  if (infiniteScroll) {
+    window.addEventListener("scroll", infiniteScroll, { passive: false });
+  }
 }
 
 function trendsPage() {
@@ -101,6 +114,8 @@ function trendsPage() {
 
   headerCategoryTitle.innerHTML = "Tendencias";
   getTrendingMovies();
+
+  infiniteScroll = getPaginatedTrendingMovies;
 }
 
 function searchPage() {
